@@ -1,0 +1,57 @@
+{% macro typeBlock(node, outerIndent = "") %}
+  {{ "{" }}<br/>
+    {% set indent = outerIndent + "&nbsp " %}
+    {% for propName, propSpec in node.properties %}
+      {{ indent | safe }}<span class='property'>"{{ propName }}"</span>: <span class='type'>{{ propSpec.type }}</span><br/>
+    {% endfor %}
+    {% if node.additionalProperties %}
+      {{ indent | safe }}<span class='property-key'>(key)</span>: {{ typeBlock(type.additionalProperties, indent) }}
+    {% endif %}
+  {{ outerIndent | safe }}{{ "}" }}<br/>
+{% endmacro %}
+
+<span class='type-schema'>
+  {{ typeBlock(type) }}
+</span>
+
+{% macro typeDescription(propSpec) %}
+  <td>
+    {% markdown %}{{ propSpec.description }}{% endmarkdown %}
+    {% if propSpec.example %}
+      <p class='example'>Example: "{{ propSpec.example }}"</p>
+    {% endif %}
+  </td>
+{% endmacro %}
+
+{% macro typeTable(node, prefix = "") %}
+  {% for propName, propSpec in node.properties %}
+    <tr>
+      <td><code>{{ prefix | safe }}{{ propName }}</code></td>
+      <td>{{ propSpec.type }}</td>
+      {{ typeDescription(propSpec) }}
+    </tr>
+  {% endfor %}
+  {% if node.additionalProperties %}
+    <tr>
+      <td><code class='property-key'>{{ prefix | safe }}(key)</code></td>
+      <td>string</td>
+      {{ typeDescription(node.additionalProperties) }}
+    </tr>
+    {{ typeTable(node.additionalProperties, "<span class='property-key'>(key)</span>.") }}
+  {% endif %}
+{% endmacro %}
+
+<p>The following table defines the properties that appear in this resource:</p>
+<table class='type-table table table-bordered'>
+  <thead>
+    <tr>
+      <th>Property name</th>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{ typeTable(type) }}
+  </tbody>
+</table>
+
