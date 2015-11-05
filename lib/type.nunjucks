@@ -1,46 +1,45 @@
-{% macro typeBlock(node, outerIndent = "") %}
-  {{ "{" }}
-    {% set indent = outerIndent + "&nbsp " %}
-    {% set comma = joiner() %}
+{% macro typeSpec(node, outerIndent = "", indent = outerIndent + "&nbsp ", comma = joiner()) %}
+  {% if node.type == "object" %}
+    {{ "{" }}
     {% for propName, propSpec in node.properties -%}
       {{ comma() }}<br/>
-      {{ indent | safe }}<span class='property'>"{{ propName }}"</span>: <span class='type'>{{ propSpec.type }}</span>
-    {%- endfor %}
+      {{ indent | safe }}<span class='property'>"{{ propName }}"</span>: {{ typeSpec(propSpec, indent) }}
+    {%- endfor -%}
     {% if node.additionalProperties -%}
       {{ comma() }}<br/>
-      {{ indent | safe }}<span class='property-key'>(key)</span>: {{ typeBlock(type.additionalProperties, indent) }}
+      {{ indent | safe }}<span class='property-key'>(key)</span>: {{ typeSpec(node.additionalProperties, indent) }}
     {%- endif %}
-  <br/>{{ outerIndent | safe }}{{ "}" }}
-{% endmacro %}
+    <br/>
+    {{ outerIndent | safe }}{{ "}" }}
+  {%- else -%}
+    <span class='type'>{{ node.type }}</span>
+  {%- endif %}
+{%- endmacro %}
 
 <span class='type-schema'>
-  {{ typeBlock(type) }}
+  {{ typeSpec(type) }}
 </span>
 
-{% macro typeDescription(propSpec) %}
-  <td>
-    {% markdown %}{{ propSpec.description }}{% endmarkdown %}
-    {% if propSpec.example %}
-      <p class='example'>Example: "{{ propSpec.example }}"</p>
+{% macro typeTable(node, prefix = "", name = "", nodeName = prefix + ("." if prefix) + name) %}
+  {% if nodeName %}
+    <tr>
+      <td><code>{{ nodeName | safe }}</code></td>
+      <td>{{ node.type }}</td>
+      <td>
+        {% markdown %}{{ node.description }}{% endmarkdown %}
+        {% if node.example %}
+          <p class='example'>Example: "{{ node.example }}"</p>
+        {% endif %}
+      </td>
+    </tr>
+  {% endif %}
+  {% if node.type == "object" %}
+    {% for propName, propSpec in node.properties %}
+      {{ typeTable(propSpec, nodeName, propName) }}
+    {% endfor %}
+    {% if node.additionalProperties %}
+      {{ typeTable(node.additionalProperties, nodeName, "<span class='property-key'>(key)</span>") }}
     {% endif %}
-  </td>
-{% endmacro %}
-
-{% macro typeTable(node, prefix = "") %}
-  {% for propName, propSpec in node.properties %}
-    <tr>
-      <td><code>{{ prefix | safe }}{{ propName }}</code></td>
-      <td>{{ propSpec.type }}</td>
-      {{ typeDescription(propSpec) }}
-    </tr>
-  {% endfor %}
-  {% if node.additionalProperties %}
-    <tr>
-      <td><code class='property-key'>{{ prefix | safe }}(key)</code></td>
-      <td>string</td>
-      {{ typeDescription(node.additionalProperties) }}
-    </tr>
-    {{ typeTable(node.additionalProperties, "<span class='property-key'>(key)</span>.") }}
   {% endif %}
 {% endmacro %}
 
