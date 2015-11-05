@@ -1,13 +1,16 @@
 {% macro typeBlock(node, outerIndent = "") %}
-  {{ "{" }}<br/>
+  {{ "{" }}
     {% set indent = outerIndent + "&nbsp " %}
-    {% for propName, propSpec in node.properties %}
-      {{ indent | safe }}<span class='property'>"{{ propName }}"</span>: <span class='type'>{{ propSpec.type }}</span><br/>
-    {% endfor %}
-    {% if node.additionalProperties %}
+    {% set comma = joiner() %}
+    {% for propName, propSpec in node.properties -%}
+      {{ comma() }}<br/>
+      {{ indent | safe }}<span class='property'>"{{ propName }}"</span>: <span class='type'>{{ propSpec.type }}</span>
+    {%- endfor %}
+    {% if node.additionalProperties -%}
+      {{ comma() }}<br/>
       {{ indent | safe }}<span class='property-key'>(key)</span>: {{ typeBlock(type.additionalProperties, indent) }}
-    {% endif %}
-  {{ outerIndent | safe }}{{ "}" }}<br/>
+    {%- endif %}
+  <br/>{{ outerIndent | safe }}{{ "}" }}
 {% endmacro %}
 
 <span class='type-schema'>
