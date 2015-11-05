@@ -73,7 +73,7 @@
 
               <!-- Nav tabs -->
               <ul class="nav nav-tabs">
-                {% if method.allUriParameters.length or method.queryParameters or method.headers or method.body %}
+                {% if method.allUriParameters.length or method.queryParameters or method.headers or method._type %}
                   <li class="active">
                     <a href="#{{ resource.uniqueId }}_{{ method.method }}_request" data-toggle="tab">Request</a>
                   </li>
@@ -88,7 +88,7 @@
 
               <!-- Tab panes -->
               <div class="tab-content">
-                {% if method.allUriParameters.length or method.queryParameters or method.headers or method.body %}
+                {% if method.allUriParameters.length or method.queryParameters or method.headers or method._type %}
                   <div class="tab-pane active" id="{{ resource.uniqueId }}_{{ method.method }}_request">
                     {% if resource.allUriParameters.length %}
                       <h3>URI Parameters</h3>
@@ -117,29 +117,10 @@
                       </ul>
                     {% endif %}
 
-                    {% if method.body %}
+                    {% if method._type %}
                       <h3>Body</h3>
-                      {% for key, b in method.body %}
-                        <p><strong>Type: {{ key }}</strong></p>
-                        {% if b.formParameters %}
-                          <strong>Form Parameters</strong>
-                          <ul>
-                            {% for key, item in b.formParameters %}
-                              {% include "./item.nunjucks" %}
-                            {% endfor %}
-                          </ul>
-                        {% endif %}
-
-                        {% if b.schema %}
-                          <p><strong>Schema</strong>:</p>
-                          <pre><code>{{ b.schema | escape }}</code></pre>
-                        {% endif %}
-
-                        {% if b.example %}
-                          <p><strong>Example</strong>:</p>
-                          <pre><code>{{ b.example | escape }}</code></pre>
-                        {% endif %}
-                      {% endfor %}
+                      {% set type = parsedSchemas[method._type] %}
+                      {% include "./type-fields.nunjucks" %}
                     {% endif %}
                   </div>
                 {% endif %}
@@ -157,23 +138,6 @@
                             {% include "./item.nunjucks" %}
                           {% endfor %}
                         </ul>
-                      {% endif %}
-
-                      {% if response.body %}
-                        <h3>Body</h3>
-                        {% for key, b in response.body %}
-                          <p><strong>Type: {{ key }}</strong></p>
-
-                          {% if b.schema %}
-                            <p><strong>Schema</strong>:</p>
-                            <pre><code>{{ b.schema | escape }}</code></pre>
-                          {% endif %}
-
-                          {% if b.example %}
-                            <p><strong>Example</strong>:</p>
-                            <pre><code>{{ b.example | escape }}</code></pre>
-                          {% endif %}
-                        {% endfor %}
                       {% endif %}
                     {% endfor %}
                   </div>

@@ -1,0 +1,53 @@
+{% set mergedRequired = [] %}
+{% set mergedWritable = [] %}
+{% set mergedModifiable = [] %}
+
+{% macro collectFields(node, prefix = "") %}
+  {% if node.type == "object" %}
+    {% for propName in node.required %}
+      {{ mergedRequired.push(prefix + propName) }}
+    {% endfor %}
+    {% for propName in node.writable %}
+      {{ mergedWritable.push(prefix + propName) }}
+    {% endfor %}
+    {% for propName in node.modifiable %}
+      {{ mergedModifiable.push(prefix + propName) }}
+    {% endfor %}
+
+    {% for propName, propSpec in node.properties %}
+      {{ collectFields(propSpec, prefix + propName + ".") }}
+    {% endfor %}
+    {% if node.additionalProperties %}
+      {{ collectFields(node.additionalProperties, prefix + "<span class='property-key'>(key)</span>.") }}
+    {% endif %}
+  {% endif %}
+{% endmacro %}
+
+<!--
+  {# this is executed with suppressed output #}
+  {{ collectFields(type) }}
+-->
+
+Provide a {# TODO "an"? #}<code>{{ method._type }}</code> resource in the request body. For that resource:
+<ul>
+{% if mergedRequired.length and method.method != "patch" %}
+  <li>You must specify a value for the following properties:
+    <ul>
+      {% for prop in mergedRequired %}
+        <li><code>{{ prop | safe }}</code></li>
+      {% endfor %}
+    </ul>
+  </li>
+{% endif %}
+{% set optional = mergedWritable if method.method == "post" else mergedModifiable %}
+{% if optional.length %}
+  <li>You may specify a value for the following properties:
+    <ul>
+      {% for prop in optional %}
+        <li><code>{{ prop | safe }}</code></li>
+      {% endfor %}
+    </ul>
+  </li>
+{% endif %}
+</ul>
+
