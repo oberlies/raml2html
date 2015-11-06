@@ -203,13 +203,13 @@
               </div>
 
               <div class="panel-body">
-                {% if resource.description or resource._type %}
+                {% if resource.description or resource["(type)"] %}
                   <div class="top-resource-description">
                     {% if resource.description %}
                       {% markdown %}{{ resource.description }}{% endmarkdown %}
                     {% endif %}
-                    {% if resource._type %}
-                      {% set type = parsedSchemas[resource._type] %}
+                    {% if resource["(type)"] %}
+                      {% set type = types[resource["(type)"]] %}
                       {% include "./type.nunjucks" %}
                     {% endif %}
                   </div>

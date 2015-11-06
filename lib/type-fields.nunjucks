@@ -4,17 +4,17 @@
 
 {% macro collectFields(node, prefix = "") %}
   {% if node.type == "object" %}
-    {% for propName in node.required %}
-      {{ mergedRequired.push(prefix + propName) }}
-    {% endfor %}
-    {% for propName in node.writable %}
-      {{ mergedWritable.push(prefix + propName) }}
-    {% endfor %}
-    {% for propName in node.modifiable %}
-      {{ mergedModifiable.push(prefix + propName) }}
-    {% endfor %}
-
     {% for propName, propSpec in node.properties %}
+      {% if propSpec.required %}
+        {{ mergedRequired.push(prefix + propName) }}
+      {% endif %}
+      {% if propSpec["(writable)"] %}
+        {{ mergedWritable.push(prefix + propName) }}
+      {% endif %}
+      {% if propSpec["(modifiable)"] %}
+        {{ mergedModifiable.push(prefix + propName) }}
+      {% endif %}
+
       {{ collectFields(propSpec, prefix + propName + ".") }}
     {% endfor %}
     {% if node.additionalProperties %}
@@ -28,7 +28,7 @@
   {{ collectFields(type) }}
 -->
 
-Provide a {# TODO "an"? #}<code>{{ method._type }}</code> resource in the request body. For that resource:
+Provide a {# TODO "an"? #}<code>{{ method["(type)"] }}</code> resource in the request body. For that resource:
 <ul>
 {% if mergedRequired.length and method.method != "patch" %}
   <li>You must specify a value for the following properties:
