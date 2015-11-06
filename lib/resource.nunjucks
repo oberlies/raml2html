@@ -73,7 +73,7 @@
 
               <!-- Nav tabs -->
               <ul class="nav nav-tabs">
-                {% if method.allUriParameters.length or method.queryParameters or method.headers or method["(type)"] %}
+                {% if method.allUriParameters.length or method.queryParameters or method.headers or method.body %}
                   <li class="active">
                     <a href="#{{ resource.uniqueId }}_{{ method.method }}_request" data-toggle="tab">Request</a>
                   </li>
@@ -88,7 +88,7 @@
 
               <!-- Tab panes -->
               <div class="tab-content">
-                {% if method.allUriParameters.length or method.queryParameters or method.headers or method["(type)"] %}
+                {% if method.allUriParameters.length or method.queryParameters or method.headers or method.body %}
                   <div class="tab-pane active" id="{{ resource.uniqueId }}_{{ method.method }}_request">
                     {% if resource.allUriParameters.length %}
                       <h3>URI Parameters</h3>
@@ -117,9 +117,10 @@
                       </ul>
                     {% endif %}
 
-                    {% if method["(type)"] %}
+                    {% if method.body and method.body[mediaType] and method.body[mediaType].type %}
                       <h3>Body</h3>
-                      {% set type = types[method["(type)"]] %}
+                      {% set typeName = method.body[mediaType].type %}
+                      {% set type = types[typeName] %}
                       {% include "./type-fields.nunjucks" %}
                     {% endif %}
                   </div>
