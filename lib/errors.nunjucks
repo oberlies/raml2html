@@ -1,0 +1,19 @@
+<h2>Errors</h2>
+<table class='table table-bordered'>
+  <thead>
+    <tr>
+      <th>Status Code</th>
+      <th>Error Detail</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for code in errorCodes.codes %}
+    <tr>
+      <td>{{ errors.value[code].httpStatus }}</td>
+      <td><code>{{ code }}</code></td>
+      <td>{{ errors.value[code].description }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>

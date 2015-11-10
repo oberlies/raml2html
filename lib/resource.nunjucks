@@ -79,7 +79,7 @@
                   </li>
                 {% endif %}
 
-                {% if method.responses %}
+                {% if method.responses or method["(errorResponses)"] %}
                   <li>
                     <a href="#{{ resource.uniqueId }}_{{ method.method }}_response" data-toggle="tab">Response</a>
                   </li>
@@ -126,21 +126,29 @@
                   </div>
                 {% endif %}
 
-                {% if method.responses %}
+                {% if method.responses or method["(errorResponses)"] %}
                   <div class="tab-pane" id="{{ resource.uniqueId }}_{{ method.method }}_response">
-                    {% for key, response in method.responses %}
-                      <h2>HTTP status code <a href="http://httpstatus.es/{{ key }}" target="_blank">{{ key }}</a></h2>
-                      {% markdown %}{{ response.description}}{% endmarkdown %}
+                    {% if method.responses %}
+                      {% for key, response in method.responses %}
+                        <h2>HTTP status code <a href="http://httpstatus.es/{{ key }}" target="_blank">{{ key }}</a></h2>
+                        {% markdown %}{{ response.description}}{% endmarkdown %}
 
-                      {% if response.headers %}
-                        <h3>Headers</h3>
-                        <ul>
-                          {% for key, item in response.headers %}
-                            {% include "./item.nunjucks" %}
-                          {% endfor %}
-                        </ul>
-                      {% endif %}
-                    {% endfor %}
+                        {% if response.headers %}
+                          <h3>Headers</h3>
+                          <ul>
+                            {% for key, item in response.headers %}
+                              {% include "./item.nunjucks" %}
+                            {% endfor %}
+                          </ul>
+                        {% endif %}
+                      {% endfor %}
+                    {% endif %}
+                    
+                    {% if method["(errorResponses)"] %}
+                      {% set errorCodes = method["(errorResponses)"] %}
+                      {% include "./errors.nunjucks" %}
+                    {% endif %}
+                                  
                   </div>
                 {% endif %}
               </div>
