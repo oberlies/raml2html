@@ -28,7 +28,7 @@
   {{ collectFields(type) }}
 -->
 
-Provide a {# TODO "an"? #}<code>{{ typeName }}</code> resource in the request body. For that resource:
+Provide a {# TODO "an"? #}<code><a onClick="$('.modal').modal('hide')" href="#{{ typeName }}">{{ typeName }}</a></code> resource in the request body. For that resource:
 <ul>
 {% if mergedRequired.length and method.method != "patch" %}
   <li>You must specify a value for the following properties:

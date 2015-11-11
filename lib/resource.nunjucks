@@ -131,6 +131,11 @@
                     {% if method.responses %}
                       {% for key, response in method.responses %}
                         <h2>HTTP status code <a href="http://httpstatus.es/{{ key }}" target="_blank">{{ key }}</a></h2>
+                        {% if response.body['application/json'].type %}
+                          Returns a
+                          {# TODO "an"? #}<code><a onClick="$('.modal').modal('hide')" href="#{{ response.body['application/json'].type|replace("[]","") }}">{{ response.body['application/json'].type }}</a></code>
+                          resource in the response body.
+                        {% endif %
                         {% markdown %}{{ response.description}}{% endmarkdown %}
 
                         {% if response.headers %}

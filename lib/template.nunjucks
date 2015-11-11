@@ -199,6 +199,9 @@
           {% for resource in resources %}
             <div class="panel panel-default">
               <div class="panel-heading">
+                {% if resource["(describeType)"] %}
+                  <a name={{ resource["(describeType)"] }}></a>
+                {% endif %}
                 <h3 id="{{ resource.uniqueId }}" class="panel-title">{% if resource.displayName %}{{ resource.displayName}}{% else %}{{ resource.relativeUri }}{% endif %}</h3>
               </div>
 
