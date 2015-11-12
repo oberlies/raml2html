@@ -135,7 +135,7 @@
                           Returns a
                           {# TODO "an"? #}<code><a onClick="$('.modal').modal('hide')" href="#{{ response.body['application/json'].type|replace("[]","") }}">{{ response.body['application/json'].type }}</a></code>
                           resource in the response body.
-                        {% endif %
+                        {% endif %}
                         {% markdown %}{{ response.description}}{% endmarkdown %}
 
                         {% if response.headers %}
